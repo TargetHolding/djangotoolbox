@@ -1,5 +1,5 @@
-from django.utils.six.moves import cPickle as pickle
 import datetime
+import six
 
 from django.conf import settings
 from django.db.backends import (
@@ -11,8 +11,16 @@ from django.db.backends import (
     BaseDatabaseIntrospection)
 from django.db.utils import DatabaseError
 from django.utils.functional import Promise
-from django.utils.safestring import EscapeString, EscapeUnicode, SafeString, \
-    SafeUnicode
+from django.utils.safestring import EscapeString, SafeString
+
+if six.PY3:
+    import pickle
+    EscapeUnicode = EscapeString
+    SafeUnicode = SafeString
+    StandardError = Exception
+else:
+    import cPickle as pickle
+    from django.utils.safestring import EscapeUnicode, SafeUnicode
 from django.utils import timezone
 
 from .creation import NonrelDatabaseCreation
