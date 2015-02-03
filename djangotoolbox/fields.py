@@ -82,8 +82,8 @@ class AbstractIterableField(models.Field):
         super(AbstractIterableField, self).contribute_to_class(cls, name)
 
         # If items' field uses SubfieldBase we also need to.
-        item_metaclass = getattr(self.item_field, '__metaclass__', None)
-        if item_metaclass and issubclass(item_metaclass, models.SubfieldBase):
+        item_metaclass = type(self.item_field)
+        if issubclass(item_metaclass, models.SubfieldBase):
             setattr(cls, self.name, Creator(self))
 
         if isinstance(self.item_field, models.ForeignKey) and isinstance(self.item_field.rel.to, six.string_types):
@@ -234,7 +234,7 @@ class DictField(AbstractIterableField):
                                   type(values))
 
 
-class EmbeddedModelField(models.Field):
+class EmbeddedModelField(six.with_metaclass(models.SubfieldBase, models.Field)):
     """
     Field that allows you to embed a model instance.
 
@@ -246,8 +246,6 @@ class EmbeddedModelField(models.Field):
           the embedded instance (not just pre_save, get_db_prep_* and
           to_python).
     """
-    __metaclass__ = models.SubfieldBase
-
     def __init__(self, embedded_model=None, *args, **kwargs):
         self.embedded_model = embedded_model
         kwargs.setdefault('default', None)
