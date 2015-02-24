@@ -336,7 +336,7 @@ class NonrelDatabaseOperations(BaseDatabaseOperations):
         #       Also research cases of database operations not done
         #       through the sql.Query.
         if isinstance(value, Promise):
-            value = unicode(value)
+            value = six.text_type(value)
 
         # Django wraps strings marked as safe or needed escaping,
         # convert them to just strings for type-inspecting back-ends.

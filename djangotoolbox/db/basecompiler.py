@@ -339,7 +339,9 @@ class NonrelQuery(object):
     def _order_in_memory(self, lhs, rhs):
         for field, ascending in self.compiler._get_ordering():
             column = field.column
-            result = cmp(lhs.get(column), rhs.get(column))
+            left = lhs.get(column)
+            right = rhs.get(column)
+            result = -1 if left < right else (0 if left == right else 1)
             if result != 0:
                 return result if ascending else -result
         return 0
